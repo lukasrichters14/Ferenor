@@ -98,9 +98,50 @@ class Player(object):
             pass
         
         return damage
+    
+    def heal(self, pts_to_heal):
+        '''Heals the player the given amount, player cannot be healed past
+        the maximum hp.'''
+        
+        # Prevents player from healing above maximum hp.
+        if pts_to_heal + self._curr_hp <= self._max_hp:
+            self._curr_hp += pts_to_heal
+        
+        else:
+            self._curr_hp = self._max_hp
+    
+    def take_damage(self, damage):
+        '''Reduces the player's hp by the given amount.'''
+        
+        self._curr_hp -= damage
+        
+        # Sets hp to 0 if hp drops below 0.
+        if self._curr_hp < 0:
+            self._curr_hp = 0
+    
+    def take_item(self, item):
+        '''Adds an item to the player's inventory.'''
+        
+        item = item.lower()
+        
+        # Adds 1 to the count of the item if it is already held by the player.
+        if item in self._inventory:
+            self._inventory[item] += 1
+        
+        # If the player does not already have this item, it is given the value
+        # 1.
+        else:
+            self._inventory[item] = 1
+    
+    
+    def __str__(self):
+        '''Returns a string for the player object.'''
+        return "Hello there!"
             
-            
-            
+
+    def __repr__(self):
+        '''Returns a string for the player object.'''
+        return "Hello there!"
             
             
             
