@@ -10,7 +10,7 @@ class Player(object):
             self._level = 1
             self._xp = 0
             self._gold = 10
-            self._inventory = {"Dagger":1}
+            self._inventory = {"dagger":1}
             self._base_stats = {"str":1, "con":1, "dex":1, "wis":1, "int":1, "cha":1}
         
         else:
@@ -52,9 +52,9 @@ class Player(object):
         
         print("Gold:", self._gold, "\n")
         for k, v in self._inventory.items():
-            print("{:<5}x{}".format(k, v))
+            print("{: <5}x{}".format(k.capitalize(), v))
     
-    def level_up(self, stat):
+    def level_up(self):
         '''Increases level by one, increases max hp by a random number 1 
         through 10 + constitution. Also, gives the player an ability or bonus 
         after certain level-ups.'''
@@ -76,6 +76,8 @@ class Player(object):
         
     def attack(self, weapon):
         '''Determines a damage value based on the weapon being used.'''
+        
+        damage = 0
         
         weapon = weapon.lower()
         if weapon in self._inventory.keys():
@@ -134,6 +136,28 @@ class Player(object):
             self._inventory[item] = 1
     
     
+    def use_item(self, item):
+        '''Takes an item name and performs an action with that item if the
+        player has the item in their inventory.'''
+        pass
+    
+    def pay_gold(self, gold_amnt):
+        '''Reduces the player's gold by the value given.'''
+        
+        if gold_amnt <= self._gold:
+            self._gold -= gold_amnt
+        
+        # Return an error.
+        else:
+            pass
+        
+        return 0
+    
+    def gain_gold(self, gold_amnt):
+        '''Increases the player's gold by the value given.'''
+        
+        self._gold += gold_amnt
+    
     def __str__(self):
         '''Returns a string for the player object.'''
         return "Hello there!"
@@ -141,7 +165,7 @@ class Player(object):
 
     def __repr__(self):
         '''Returns a string for the player object.'''
-        return "Hello there!"
+        return self.__str__()
             
             
             

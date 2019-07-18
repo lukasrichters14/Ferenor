@@ -1,3 +1,3 @@
-Creature Name,HP,Gold,Str,Con,Dex,Wis,Int,Cha,Inventory
-Goblin,10,2,,,,,,,dagger;bow
-Guard,15,5,,,,,,,sword;chain mail;boots
+Creature Name,HP,Gold,XP,Str,Con,Dex,Wis,Int,Cha,Inventory
+Goblin,10,2,25,,,,,,,dagger;bow
+Guard,15,5,50,,,,,,,sword;chain mail

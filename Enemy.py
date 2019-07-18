@@ -1,100 +1,93 @@
 from random import randint
 
 class Enemy(object):
-    def __init__(self, name, hp, ac):
-        '''Initialize an object of the Enemy class. Input is name, hit points, and 
-		armor class. Returns nothing.'''
-        self.name = name
-        self.hp = hp
-        self.max_hp = hp
-        self.ac = ac
-    	  # Initialize a dictionary for all of the enemy's weapons.
-        self.weapon_dict = {}
-    
-    def add_weapon(self, weapon_name, attack_die, attack_bonus, damage_mod):
-        '''Add a weapon/attack to the enemy. Input is name of the attack, the die
-		  associated with that attack, the bonus to the attack roll, and the damage
-		  modifier. Returns nothing.'''
-        weapon_name = weapon_name
-        attack_die = attack_die
-        attack_bonus = attack_bonus
-        damage_mod = damage_mod
-        # Add the weapon and its stats to the weapon dictionary initialized at
-		  # creation.
-        if weapon_name not in self.weapon_dict:
-            self.weapon_dict[weapon_name] = [attack_die, attack_bonus, damage_mod]
-    
-    def attack(self, weapon_name, advantage=False, disadvantage=False):
-        '''Emulates the rolling of a d20 for armor class and the appropriate
-        die for damage. Also allows for rolling with advantage or disadvantage. 
-        Returns nothing.'''
+    def __init__(self, name, num=0):
+        '''Initialize an object of the Enemy class. Name is used to find the 
+        creature in the creature database. Num is an optional arguement used
+        when there are more than one of the same creature.'''
         
-        # If the enemy has advantage on the attack, roll two die and take the
-        # lower one.
-        if advantage == True:
-            attack_roll_1 = randint(1, 20) + self.weapon_dict[weapon_name][1]
-            attack_roll_2 = randint(1, 20) + self.weapon_dict[weapon_name][1]
-            if attack_roll_1 >= attack_roll_2:
-                attack_roll = attack_roll_1
-            else:
-                attack_roll = attack_roll_2
-		
-        # If the enemy has disadvantage on the attack, roll two die and take the
-        # lower one.
-        elif disadvantage == True:
-            attack_roll_1 = randint(1, 20) + self.weapon_dict[weapon_name][1]
-            attack_roll_2 = randint(1, 20) + self.weapon_dict[weapon_name][1]
-            if attack_roll_1 <= attack_roll_2:
-                attack_roll = attack_roll_1
-            else:
-                attack_roll = attack_roll_2
-		
-        # If the enemy has neither advantage or disadvantage on the attack, roll 
-        # two die and take the lower one.
+        # Allows for creatures to be differentiated when there are more than
+        # one of the same creature.
+        if num:
+            self.name = name + str(num)
         else:
-            attack_roll = randint(1, 20) + self.weapon_dict[weapon_name][1]
-			
-        # If the attack is a critical hit (the enemy rolls a natural 20), roll
-        # two damage die and add the bonus to only one of those rolls.
-        if attack_roll - self.weapon_dict[weapon_name][1] == 20:
-            damage = randint(1, self.weapon_dict[weapon_name][0]) + self.weapon_dict[weapon_name][2] + randint(1, self.weapon_dict[weapon_name][0])
+            self.name = name
+    	  
+        self._attack_dict = {}  # Dictionary for the creature's attacks.
+        self._base_stats = {}  # Dictionary for the creature's stats.
+        self._inventory = {}  # Dictionary for the creature's inventory.
         
-        # If the attack is not critical, roll damage like normal.
+        search_len = len(name) - 1
+        
+        creatures_database = open("creatures.csv", "r")
+        # Gets all of the data for the creature by looping through the database.
+        for i, line in enumerate(creatures_database):
+            if i != 0:  # Ignores headers.
+                if line[:search_len] == name:  # Creature is found in database.
+                    self._max_hp = 0
+                    self._curr_hp = self._max_hp
+    
+    
+    def get_hp(self):
+        return self._curr_hp
+    
+    def get_inventory(self):
+        '''Returns the dictionary containing the creature's inventory.'''
+        return self._inventory
+    
+    def attack(self, weapon):
+        '''Determines a damage value based on the weapon being used.'''
+        
+        weapon = weapon.lower()
+        if weapon in self._inventory.keys():
+            if weapon == "dagger":
+                damage = randint(1, 4) + self._base_stats["dex"]
+            
+            elif weapon == "sword":
+                damage = randint(1, 6) + self._base_stats["dex"]
+    
+            elif weapon == "hammer":
+                damage = randint(1, 6) + self._base_stats["str"]
+            
+            elif weapon == "bow":
+                damage = randint(1, 8) + self._base_stats["dex"]
+            
+            elif weapon == "axe":
+                damage = randint(1, 8) + self._base_stats["str"]
         else:
-            damage = randint(1, self.weapon_dict[weapon_name][0]) + self.weapon_dict[weapon_name][2]
+            # Return an error for not having the weapon.
+            pass
         
-        # Display results.
-        print(self.name, "Rolled:")
-        print("Attack Roll:", attack_roll)
-        print("Attack Damage:", damage)
+        return damage
+   
+    def heal(self, pts_to_heal):
+        '''Heals the creature the given amount, creature cannot be healed past
+        its maximum hp.'''
         
-    def __sub__(self, other):
-        '''Subtracts a damage value from the enemy's hp. Returns nothing.'''
-        self.hp -= other
-        # Display current HP.
-        print(self.name, "has", self.hp, " hp left.")
+        # Prevents creature from healing above maximum hp.
+        if pts_to_heal + self._curr_hp <= self._max_hp:
+            self._curr_hp += pts_to_heal
+        
+        else:
+            self._curr_hp = self._max_hp
     
-    def __add__(self, other):
-        '''Adds a value to the enemy's hp. Returns nothing.'''
-        self.hp += other
-        # Display current HP.
-        print(self.name, "has", self.hp, " hp left.")
+    def take_damage(self, damage):
+        '''Reduces the creature's hp by the given amount.'''
         
-    
-    def check_hp(self):
-        '''Check how much HP the enemy has. Returns the current HP.'''
-        return self.hp
+        self._curr_hp -= damage
+        
+        # Sets hp to 0 if hp drops below 0.
+        if self._curr_hp < 0:
+            self._curr_hp = 0
 
     def __str__(self):
         '''Returns a string for the enemy object.'''
-        weapons = list(self.weapon_dict.keys())
-        return "Name: {}, HP: {}, Weapons: {}".format(self.name, self.hp, weapons)
+        return self._name
             
 
     def __repr__(self):
         '''Returns a string for the enemy object.'''
-        weapons = list(self.weapon_dict.keys())
-        return "Name: {}, HP: {}, Weapons: {}".format(self.name, self.hp, weapons)
+        return self.__str__()
 		
 		
 		
