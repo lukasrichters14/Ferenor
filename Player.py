@@ -19,7 +19,7 @@ class Player(object):
             self._inventory = {}
             file = open(saved_stats, 'r')
             for i, line in enumerate(file):
-                if i > 0 and i < 12:
+                if i > 0 and i < 12:  # Makes sure that only the player stats are read.
                     stats_list.append(int(line))
                 elif i >= 12:
                     line_list = line.split(',')
@@ -147,7 +147,7 @@ class Player(object):
         if gold_amnt <= self._gold:
             self._gold -= gold_amnt
         
-        # Return an error.
+        # Returns an error.
         else:
             pass
         
