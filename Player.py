@@ -10,6 +10,7 @@ class Player(object):
             self._level = 1
             self._xp = 0
             self._gold = 10
+            self._board_position = [0,0]
             self._inventory = {"dagger":1}
             self._base_stats = {"str":1, "con":1, "dex":1, "wis":1, "int":1, "cha":1}
         
@@ -157,6 +158,14 @@ class Player(object):
         '''Increases the player's gold by the value given.'''
         
         self._gold += gold_amnt
+    
+    def set_board_pos(self, row, col):
+        '''Sets the board position of the player.'''
+        self._board_position = [row, col]
+    
+    def get_board_pos(self):
+        '''Gets the board position of the player.'''
+        return tuple(self._board_position)
     
     def __str__(self):
         '''Returns a string for the player object.'''

@@ -16,6 +16,7 @@ class Enemy(object):
         self._attack_dict = {}  # Dictionary for the creature's attacks.
         self._base_stats = {}  # Dictionary for the creature's stats.
         self._inventory = {}  # Dictionary for the creature's inventory.
+        self._board_position = [0,0]
         
         search_len = len(name) - 1
         
@@ -79,6 +80,14 @@ class Enemy(object):
         # Sets hp to 0 if hp drops below 0.
         if self._curr_hp < 0:
             self._curr_hp = 0
+    
+    def set_board_pos(self, row, col):
+        '''Sets the board position of the player.'''
+        self._board_position = [row, col]
+    
+    def get_board_pos(self):
+        '''Gets the board position of the player.'''
+        return tuple(self._board_position)
 
     def __str__(self):
         '''Returns a string for the enemy object.'''
