@@ -100,8 +100,8 @@ class Player(Creature):
     
     
     def __str__(self):
-        '''Returns a string for the player object.'''
-        return "Hello there!"
+        '''Returns "P" to signify the player.'''
+        return "P"
             
 
     def __repr__(self):

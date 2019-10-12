@@ -9,9 +9,9 @@ class Enemy(Creature):
         # Allows for creatures to be differentiated when there are more than
         # one of the same creature.
         if num:
-            self.name = name + str(num)
+            self._name = name + str(num)
         else:
-            self.name = name
+            self._name = name
     	  
         self._attack_dict = {}  # Dictionary for the creature's attacks.
         self._base_stats = {}  # Dictionary for the creature's stats.
@@ -33,10 +33,21 @@ class Enemy(Creature):
         '''Returns the dictionary containing the creature's inventory.'''
         return self._inventory
     
+    def get_name(self):
+        return self._name
+    
 
     def __str__(self):
-        '''Returns a string for the enemy object.'''
-        return self._name
+        '''Returns the first letter of the enemy's name and the number that
+        corresponds with the enemy (if applicable).'''
+        
+        if self._name[-2].isdigit():
+            return self._name[0] + self._name[-2:]
+        
+        elif self._name[-1].isdigit():
+            return self._name[0] + self._name[-1]
+        else:
+            return self._name[0]
             
 
     def __repr__(self):
