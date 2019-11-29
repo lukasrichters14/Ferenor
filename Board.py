@@ -18,10 +18,10 @@ class Board(object):
         ''' Initalizes a board (a list of lists) using the inputs for rows and 
         cols (columns). '''
         
-        self._EMPTY_SPACE = " "
+        self._EMPTY_SPACE = "  "
         
         # A dictonary to standardize the terrain icons.
-        self._terrain_dict = {"rock":"r", "tree":"t", "water":"w"}
+        self._terrain_dict = {"rock":"r ", "tree":"t ", "water":"w "}
         
         
         self._rows = rows
@@ -76,27 +76,22 @@ class Board(object):
 
 
 
-    def populate(self, player, player_pos, *args):
+    def populate(self, player, *enemies):
         ''' player: the player object.
             player_pos: a tuple that is formatted as: (row, col)
             *args should be formatted in this way:
                 (enemy_object, starting_row, starting_col) '''
         
         self._player = player
-        self._player.set_board_pos(player_pos[0], player_pos[1])
+        player_pos = player.get_board_pos()
         self.move("player", player_pos[0], player_pos[1])
         
-        # Takes all of the enemies in args and initializes the starting position
-        # for each one, appends the enemy to the enemies list, and then moves
-        # it to the given location.
-        for i in args:
-            enemy = i[0]
-            row = i[1]
-            col = i[2]
-            enemy.set_board_pos(row, col)
-            
-            self._enemies.append(enemy)
-            self.move(enemy.get_name(), row, col)
+        # Takes all of the enemies in enemies, appends the enemy to the 
+        # enemies list, and then moves its set location.
+        for e in enemies:
+            enemy_pos = e.get_board_pos()
+            self._enemies.append(e)
+            self.move(e.get_name(), enemy_pos[0], enemy_pos[1])
         
     
     def set_terrain(self, terrain_type, row, col):
@@ -111,9 +106,33 @@ class Board(object):
         self._board[row][col] = terrain_icon
     
     
+    def remove(self, creature_name):
+        ''' Removes a creature from the board. This cannot be used to remove
+        the player, as it is assumed that if the player were to be removed, the
+        player is dead. '''
+        
+        creature = None  # Placeholder for a creature object.
+            
+        for e in self._enemies:
+            if e.get_name() == creature_name:
+                creature = e
+            
+            if creature == None:  # No creature with the given name is found.
+                raise Errors.CreatureNotFoundError(creature_name)
+            
+        
+        creature_pos = creature.get_board_pos()
+        
+        # Replaces the creature at that position with the empty space.
+        self._board[creature_pos[0]][creature_pos[1]] = self._EMPTY_SPACE
+        
+        self._enemies.remove(creature)
+        
+    
+    
     def __str__(self):
         ''' Formats the board so that it can be nicely displayed.'''
-        return_str = "-" * (self._cols * 2 + 1) + "\n"
+        return_str = "-" * (self._cols * 3 + 1) + "\n"
         
         for row in range(self._rows):
             for col in range(self._cols):
@@ -121,7 +140,7 @@ class Board(object):
             
             return_str += "|\n"
         
-        return_str += "-" * (self._cols * 2 + 1)
+        return_str += "-" * (self._cols * 3 + 1)
         
         return return_str
     
@@ -130,8 +149,7 @@ class Board(object):
         return self.__str__()
         
         
-        
-        
+
         
         
         

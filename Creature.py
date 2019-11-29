@@ -27,6 +27,9 @@ class Creature(object):
     
     def get_movement(self):
         return self._movement
+    
+    def get_stats(self):
+        return self._base_stats
 
     def set_board_pos(self, row, col):
         self._board_position = [row, col]

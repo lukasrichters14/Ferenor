@@ -101,7 +101,7 @@ class Player(Creature):
     
     def __str__(self):
         '''Returns "P" to signify the player.'''
-        return "P"
+        return "P "
             
 
     def __repr__(self):
