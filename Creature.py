@@ -1,12 +1,14 @@
-from random import randint
 from Token import Token
 from Errors import ItemError
+from Items import ItemGenerator
 
 
 class Creature(object):
-    """ The creature class is a base class for the Player and Enemy classes. This class defines
-    basic variables and methods that can be used by both classes."""
-    
+    """
+    The creature class is a base class for the Player and Enemy classes. This class defines
+    basic variables and methods that can be used by both classes.
+    """
+
     def __init__(self):
         self.max_hp = 15
         self.curr_hp = self.max_hp
@@ -34,48 +36,38 @@ class Creature(object):
         :return: [tuple] (row, column)
         """
         return tuple(self.board_position)
-    
+
     def attack(self, weapon):
         """
         Determines a damage value based on the weapon being used.
-        :param weapon: [str] the name of the weapon to use.
+        :param weapon: [Weapon] the weapon to attack with.
         :return: [int] the damage done by the attack.
         *** Throws ItemError ***
         """
-        damage = 0
-        
         weapon = weapon.lower()
-        if weapon in self.inventory.keys():
-            if weapon == "dagger":
-                damage = randint(1, 4) + self.base_stats["dex"]
-            
-            elif weapon == "sword":
-                damage = randint(1, 6) + self.base_stats["dex"]
-    
-            elif weapon == "hammer":
-                damage = randint(1, 6) + self.base_stats["str"]
-            
-            elif weapon == "bow":
-                damage = randint(1, 8) + self.base_stats["dex"]
-            
-            elif weapon == "axe":
-                damage = randint(1, 8) + self.base_stats["str"]
+        if weapon in self.inventory:
+            # Create the weapon instance.
+            weapon_item = ItemGenerator.create(weapon)
+            # Calculate damage for the weapon attack.
+            # damage = randint(1, max damage) + player stat bonus
+            damage = weapon_item.use() + self.base_stats[weapon_item.stat]
+
         else:
             # Raise an error for not having the weapon.
             raise ItemError(weapon)
-        
+
         return damage
-    
+
     def heal(self, pts_to_heal):
         """
         Heals the creature the given amount, but ensures that the creature is not healed past its
         maximum hp.
         :param pts_to_heal: [int] the number hit points that the creature regains.
         """
-        # Prevents creature from healing above maximum hp.
+        # Prevent creature from healing above maximum hp.
         if pts_to_heal + self.curr_hp <= self.max_hp:
             self.curr_hp += pts_to_heal
-        
+
         else:
             self.curr_hp = self.max_hp
 
@@ -85,8 +77,8 @@ class Creature(object):
         :param damage: [int] the amount of damage to subtract from the creature's hit points.
         """
         self.curr_hp -= damage
-        
-        # Sets hp to 0 if hp drops below 0.
+
+        # Set hp to 0 if hp drops below 0.
         if self.curr_hp < 0:
             self.curr_hp = 0
 

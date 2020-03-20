@@ -1,6 +1,6 @@
-from random import randint
 from Creature import Creature
 from Errors import InsufficientFundsError
+from Items import *
 
 
 class Player(Creature):
@@ -18,12 +18,15 @@ class Player(Creature):
             self._inventory = {}
             file = open(saved_stats, 'r')
             for i, line in enumerate(file):
-                if 0 < i < 12:  # Makes sure that only the player stats are read.
+                # Read player stats.
+                if 0 < i < 12:
                     stats_list.append(int(line))
+                # Read player inventory.
                 elif i >= 12:
                     line_list = line.split(',')
                     self.inventory[line_list[0]] = int(line_list[1])
-            
+
+            # Set all player variables based on data read in from the save file.
             self.max_hp = stats_list[0]
             self.curr_hp = stats_list[1]
             self.level = stats_list[2]
@@ -81,14 +84,14 @@ class Player(Creature):
         else:
             self.inventory[item] = 1
     
-    def use_item(self, item):
+    def use_item(self, name):
         """
         Takes an item name and performs an action with that item if the player has the item in their
         inventory.
-        :param item: [Item] the item to use.
+        :param name: [str] the name of the item to use.
         """
         pass
-    
+
     def pay_gold(self, gold_amnt):
         """
         Reduces the player's gold by the value given.
@@ -107,6 +110,13 @@ class Player(Creature):
         :param gold_amnt: [int] amount of gold to add to the player's gold count.
         """
         self.gold += gold_amnt
+
+    def gain_xp(self, xp_gained):
+        """
+        When the player gains xp, this function determines if the player levels up or not.
+        :param xp_gained: [int] the amount of xp gained.
+        """
+        pass
 
     def __str__(self):
         """
