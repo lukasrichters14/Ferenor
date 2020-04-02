@@ -1,3 +1,4 @@
+from random import randint
 from Creature import Creature
 from Errors import InsufficientFundsError
 from Items import *
@@ -15,7 +16,7 @@ class Player(Creature):
         else:
             # Creates a Player based on the saved stats
             stats_list = []
-            self._inventory = {}
+            self.inventory = {}
             file = open(saved_stats, 'r')
             for i, line in enumerate(file):
                 # Read player stats.
@@ -53,7 +54,6 @@ class Player(Creature):
         Increases level by one, increases max hp by a random number 1 through 10 + constitution.
         Also, gives the player an ability or bonus after certain level-ups.
         """
-        
         self.level += 1
         self.max_hp += randint(1, 10) + self.base_stats["con"]
         
@@ -71,7 +71,7 @@ class Player(Creature):
     def take_item(self, item):
         """
         Adds an item to the player's inventory.
-        :param item: [Item] the item to add to the player's inventory.
+        :param item: [str] the item to add to the player's inventory.
         """
         item = item.lower()
         
@@ -79,8 +79,7 @@ class Player(Creature):
         if item in self.inventory:
             self.inventory[item] += 1
         
-        # If the player does not already have this item, it is given the value
-        # 1.
+        # If the player does not already have this item, it is given the value 1.
         else:
             self.inventory[item] = 1
     
@@ -90,7 +89,18 @@ class Player(Creature):
         inventory.
         :param name: [str] the name of the item to use.
         """
-        pass
+        name = name.lower()
+        if name in self.inventory:
+            item = ItemGenerator.create(name)
+            # Heal player if the item is a potion.
+            if isinstance(item, Potion):
+                self.heal(item.use())
+                # Remove the used item from the inventory.
+                self.inventory[name] -= 1
+
+            # Remove the item from the inventory if there are none left.
+            if self.inventory[name] == 0:
+                del self.inventory[name]
 
     def pay_gold(self, gold_amnt):
         """
